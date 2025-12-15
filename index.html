@@ -23,6 +23,13 @@
       box-shadow: 0 10px 20px rgba(0,0,0,0.15);
     }
 
+    .author {
+      font-family: 'Comic Sans MS', 'Trebuchet MS', cursive;
+      color: #6a5acd;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
     h1 {
       color: #ff6f91;
       margin-bottom: 20px;
@@ -69,6 +76,7 @@
 <body>
 
   <div class="game">
+    <div class="author">عمل الطالبة<br>أشواق حمزة السيد</div>
     <h1>🧮 نحل مع بعض</h1>
     <div class="question" id="question"></div>
     <div class="options" id="options"></div>
@@ -76,64 +84,72 @@
   </div>
 
   <script>
-    const questionEl = document.getElementById('question');
-    const optionsEl = document.getElementById('options');
-    const messageEl = document.getElementById('message');
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const messageEl = document.getElementById("message");
 
-    let correctAnswer = 0;
+  let correctAnswer = 0;
 
-    function randomNumber() {
-      return Math.floor(Math.random() * 100); // من 0 إلى 99
+  function randomNumber() {
+    return Math.floor(Math.random() * 100);
+  }
+
+  function generateQuestion() {
+    messageEl.textContent = "";
+    optionsEl.innerHTML = "";
+
+    let num1 = randomNumber();
+    let num2 = randomNumber();
+    const isAddition = Math.random() > 0.5;
+
+    if (isAddition) {
+      correctAnswer = num1 + num2;
+      questionEl.textContent = num1 + " + " + num2 + " = ؟";
+    } else {
+      if (num2 > num1) {
+        let temp = num1;
+        num1 = num2;
+        num2 = temp;
+      }
+      correctAnswer = num1 - num2;
+      questionEl.textContent = num1 + " - " + num2 + " = ؟";
     }
 
-    function generateQuestion() {
-      messageEl.textContent = '';
-      optionsEl.innerHTML = '';
-
-      const num1 = randomNumber();
-      const num2 = randomNumber();
-      const isAddition = Math.random() > 0.5;
-
-      if (isAddition) {
-        correctAnswer = num1 + num2;
-        questionEl.textContent = `${num1} + ${num2} = ؟`;
-      } else {
-        correctAnswer = num1 - num2;
-        questionEl.textContent = `${num1} - ${num2} = ؟`;
-      }
-
-      const answers = new Set();
-      answers.add(correctAnswer);
-
-      while (answers.size < 4) {
-        answers.add(correctAnswer + Math.floor(Math.random() * 20 - 10));
-      }
-
-      [...answers].sort(() => Math.random() - 0.5).forEach(answer => {
-        const btn = document.createElement('button');
-        btn.textContent = answer;
-        btn.onclick = () => checkAnswer(btn, answer);
-        optionsEl.appendChild(btn);
-      });
-    }
-
-    function checkAnswer(button, answer) {
-      const buttons = document.querySelectorAll('.options button');
-      buttons.forEach(b => b.disabled = true);
-
-      if (answer === correctAnswer) {
-        button.classList.add('correct');
-        messageEl.textContent = '🎉 إجابة صحيحة!';
-        setTimeout(generateQuestion, 1000);
-      } else {
-        button.classList.add('wrong');
-        messageEl.textContent = '❌ حاول مرة ثانية';
-        buttons.forEach(b => b.disabled = false);
+    let answers = [correctAnswer];
+    while (answers.length < 4) {
+      let fake = correctAnswer + Math.floor(Math.random() * 20 - 10);
+      if (!answers.includes(fake)) {
+        answers.push(fake);
       }
     }
 
-    generateQuestion();
-  </script>
+    answers.sort(() => Math.random() - 0.5);
+
+    answers.forEach(answer => {
+      const btn = document.createElement("button");
+      btn.textContent = answer;
+      btn.onclick = function () {
+        checkAnswer(btn, answer);
+      };
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(button, answer) {
+    const buttons = document.querySelectorAll(".options button");
+
+    if (answer === correctAnswer) {
+      button.classList.add("correct");
+      messageEl.textContent = "🎉 إجابة صحيحة!";
+      setTimeout(generateQuestion, 1000);
+    } else {
+      button.classList.add("wrong");
+      messageEl.textContent = "❌ حاول مرة ثانية";
+    }
+  }
+
+  generateQuestion();
+</script>
 
 </body>
 </html>
